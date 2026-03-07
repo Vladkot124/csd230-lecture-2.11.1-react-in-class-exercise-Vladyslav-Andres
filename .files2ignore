@@ -1,0 +1,84 @@
+# .files2ignore GenericPromptGeneratorV4
+ai_prompt*
+Timeline*.json
+assets/
+
+# --- IDEs ---
+# IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Eclipse
+.settings/
+.metadata/
+.classpath
+.project
+.factorypath
+.springBeans
+
+# NetBeans
+nbproject/private/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# VS Code
+.vscode/
+
+# --- Build & Runtime ---
+# Maven
+target/
+.mvn/
+mvnw
+mvnw.cmd
+# Maven Release Plugin artifacts
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.next
+release.properties
+
+# Gradle
+.gradle/
+build/
+gradlew
+gradlew.bat
+gradle/wrapper/
+
+# Node / Frontend
+node_modules/
+
+# --- Flutter / Dart ---
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+ios/Pods/
+android/.gradle/
+# Generated code (too noisy for prompts)
+*.g.dart
+*.freezed.dart
+
+# --- OS & Misc ---
+.git/
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.bak
+
+# --- Binaries & Archives ---
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+*.exe
+*.dll
+*.so
+*.dylib
