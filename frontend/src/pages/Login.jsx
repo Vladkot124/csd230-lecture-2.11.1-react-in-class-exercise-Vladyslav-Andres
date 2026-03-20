@@ -1,45 +1,91 @@
-import { useState } from "react";
-import { useNavigate } from "react-router";
-import { useAuth } from "../provider/authProvider";
-import api from "../api/axiosConfig";
+import { useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '../provider/authProvider'
+import api from '../api/axiosConfig'
 
-const Login = () => {
-    const { setToken } = useAuth();
-    const navigate = useNavigate();
+function Login() {
+    const { setToken } = useAuth()
+    const navigate = useNavigate()
+    const location = useLocation()
 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
+    const queryParams = new URLSearchParams(location.search)
+    const isExpired = queryParams.get('expired') === 'true'
+
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [error, setError] = useState('')
 
     const handleLogin = async (e) => {
-        e.preventDefault();
+        e.preventDefault()
+        setError('')
+
         try {
-            const res = await api.post("/auth/login", { email, password });
-            setToken(res.data.token);
-            navigate("/", { replace: true });
+            const response = await api.post('/auth/login', { email, password })
+            const token = response.data.token || response.data.accessToken || response.data.jwt
+
+            if (!token) {
+                throw new Error('No token returned from server')
+            }
+
+            setToken(token)
+            navigate('/', { replace: true })
         } catch (err) {
-            setError("Invalid credentials. Please try again.");
+            console.error(err)
+            setError('Invalid credentials. Please try again.')
         }
-    };
+    }
 
     return (
-        <div style={{ textAlign: "center", marginTop: "50px" }}>
+        <div style={{ textAlign: 'center', marginTop: '50px' }}>
             <h2>Sign In to Bookstore Admin</h2>
-            {error && <p style={{ color: "red" }}>{error}</p>}
 
-            <form onSubmit={handleLogin} style={{ display: "inline-block", textAlign: "left" }}>
-                <div style={{ marginBottom: "10px" }}>
-                    <label>Username:</label><br/>
-                    <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            {isExpired && (
+                <div
+                    style={{
+                        backgroundColor: 'orange',
+                        color: 'black',
+                        padding: '12px',
+                        margin: '0 auto 20px auto',
+                        width: '320px',
+                        borderRadius: '8px',
+                        fontWeight: 'bold'
+                    }}
+                >
+                    Session expired. Please log in again.
                 </div>
-                <div style={{ marginBottom: "10px" }}>
-                    <label>Password:</label><br/>
-                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            )}
+
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+
+            <form onSubmit={handleLogin} style={{ display: 'inline-block', textAlign: 'left' }}>
+                <div style={{ marginBottom: '10px' }}>
+                    <label>Email:</label>
+                    <br />
+                    <input
+                        type="text"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
                 </div>
-                <button type="submit" style={{ width: "100%" }}>Login</button>
+
+                <div style={{ marginBottom: '10px' }}>
+                    <label>Password:</label>
+                    <br />
+                    <input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
+                </div>
+
+                <button type="submit" style={{ width: '100%' }}>
+                    Login
+                </button>
             </form>
         </div>
-    );
-};
+    )
+}
 
-export default Login;
+export default Login

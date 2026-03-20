@@ -1,6 +1,9 @@
 import { useState } from 'react'
+import { useAuth } from './provider/authProvider'
 
 function Magazine({ magazine, onMagazineUpdated, onMagazineDeleted }) {
+    const { isAdmin } = useAuth()
+
     const [isEditing, setIsEditing] = useState(false)
     const [tempTitle, setTempTitle] = useState(magazine.title ?? '')
     const [tempPrice, setTempPrice] = useState(String(magazine.price ?? ''))
@@ -24,8 +27,6 @@ function Magazine({ magazine, onMagazineUpdated, onMagazineDeleted }) {
             copies: magazine.copies
         }
 
-        console.log('PUT payload:', updatedMagazine)
-
         try {
             const response = await fetch(`/api/magazines/${magazine.id}`, {
                 method: 'PUT',
@@ -34,7 +35,6 @@ function Magazine({ magazine, onMagazineUpdated, onMagazineDeleted }) {
             })
 
             const text = await response.text()
-            console.log('PUT response:', text)
 
             if (!response.ok) {
                 throw new Error(text)
@@ -55,7 +55,6 @@ function Magazine({ magazine, onMagazineUpdated, onMagazineDeleted }) {
             })
 
             const text = await response.text()
-            console.log('DELETE response:', text)
 
             if (!response.ok) {
                 throw new Error(text)
@@ -82,36 +81,12 @@ function Magazine({ magazine, onMagazineUpdated, onMagazineDeleted }) {
                     alignItems: 'center'
                 }}
             >
-                <input
-                    type="text"
-                    value={tempTitle}
-                    onChange={(e) => setTempTitle(e.target.value)}
-                    style={{ flex: 2 }}
-                />
-                <input
-                    type="number"
-                    step="0.01"
-                    value={tempPrice}
-                    onChange={(e) => setTempPrice(e.target.value)}
-                    style={{ width: '100px' }}
-                />
-                <input
-                    type="number"
-                    value={tempOrderQty}
-                    onChange={(e) => setTempOrderQty(e.target.value)}
-                    style={{ width: '100px' }}
-                />
-                <input
-                    type="date"
-                    value={tempCurrentIssue}
-                    onChange={(e) => setTempCurrentIssue(e.target.value)}
-                />
-                <button onClick={handleSave} style={{ backgroundColor: '#28a745', color: 'white' }}>
-                    Save
-                </button>
-                <button onClick={() => setIsEditing(false)} style={{ backgroundColor: '#6c757d', color: 'white' }}>
-                    Cancel
-                </button>
+                <input type="text" value={tempTitle} onChange={(e) => setTempTitle(e.target.value)} style={{ flex: 2 }} />
+                <input type="number" step="0.01" value={tempPrice} onChange={(e) => setTempPrice(e.target.value)} style={{ width: '100px' }} />
+                <input type="number" value={tempOrderQty} onChange={(e) => setTempOrderQty(e.target.value)} style={{ width: '100px' }} />
+                <input type="date" value={tempCurrentIssue} onChange={(e) => setTempCurrentIssue(e.target.value)} />
+                <button onClick={handleSave} style={{ backgroundColor: '#28a745', color: 'white' }}>Save</button>
+                <button onClick={() => setIsEditing(false)} style={{ backgroundColor: '#6c757d', color: 'white' }}>Cancel</button>
             </div>
         )
     }
@@ -136,14 +111,22 @@ function Magazine({ magazine, onMagazineUpdated, onMagazineDeleted }) {
                 </p>
             </div>
 
-            <div>
-                <button onClick={() => setIsEditing(true)} style={{ backgroundColor: '#ffc107', marginRight: '5px' }}>
-                    Edit
-                </button>
-                <button onClick={handleDelete} style={{ backgroundColor: '#ff4444', color: 'white' }}>
-                    Delete
-                </button>
-            </div>
+            {isAdmin && (
+                <div>
+                    <button
+                        onClick={() => setIsEditing(true)}
+                        style={{ backgroundColor: '#ffc107', marginRight: '5px' }}
+                    >
+                        Edit
+                    </button>
+                    <button
+                        onClick={handleDelete}
+                        style={{ backgroundColor: '#ff4444', color: 'white' }}
+                    >
+                        Delete
+                    </button>
+                </div>
+            )}
         </div>
     )
 }

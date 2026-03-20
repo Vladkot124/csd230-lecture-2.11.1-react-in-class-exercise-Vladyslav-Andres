@@ -1,21 +1,32 @@
-import axios from 'axios';
+import axios from 'axios'
 
 const api = axios.create({
-    baseURL: '/api/rest'
-});
+    baseURL: '/api'
+})
 
-// Axios Interceptor: Runs right before ANY request is sent
 api.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('token')
         if (token) {
-            config.headers['Authorization'] = `Bearer ${token}`;
+            config.headers.Authorization = `Bearer ${token}`
         }
-        return config;
+        return config
     },
-    (error) => {
-        return Promise.reject(error);
-    }
-);
+    (error) => Promise.reject(error)
+)
 
-export default api;
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        const status = error?.response?.status
+
+        if (status === 401 || status === 403) {
+            localStorage.removeItem('token')
+            window.location.href = '/login?expired=true'
+        }
+
+        return Promise.reject(error)
+    }
+)
+
+export default api

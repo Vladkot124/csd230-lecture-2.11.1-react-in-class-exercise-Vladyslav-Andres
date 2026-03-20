@@ -1,10 +1,12 @@
 import { useState } from 'react'
+import { useAuth } from './provider/authProvider'
 
 function Book({ id, title, author, price, onDelete, onUpdate }) {
     const [isEditing, setIsEditing] = useState(false)
     const [tempTitle, setTempTitle] = useState(title)
     const [tempAuthor, setTempAuthor] = useState(author)
     const [tempPrice, setTempPrice] = useState(price)
+    const { isAdmin } = useAuth()
 
     const handleSave = () => {
         const updatedBook = {
@@ -62,10 +64,22 @@ function Book({ id, title, author, price, onDelete, onUpdate }) {
                 </p>
             </div>
 
-            <div>
-                <button onClick={() => setIsEditing(true)} style={{ backgroundColor: '#ffc107', marginRight: '5px' }}>Edit</button>
-                <button onClick={() => onDelete(id)} style={{ backgroundColor: '#ff4444', color: 'white' }}>Delete</button>
-            </div>
+            {isAdmin && (
+                <div>
+                    <button
+                        onClick={() => setIsEditing(true)}
+                        style={{ backgroundColor: '#ffc107', marginRight: '5px' }}
+                    >
+                        Edit
+                    </button>
+                    <button
+                        onClick={() => onDelete(id)}
+                        style={{ backgroundColor: '#ff4444', color: 'white' }}
+                    >
+                        Delete
+                    </button>
+                </div>
+            )}
         </div>
     )
 }

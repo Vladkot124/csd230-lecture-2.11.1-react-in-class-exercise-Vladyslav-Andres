@@ -1,17 +1,16 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router";
-import { useAuth } from "../provider/authProvider";
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import { BrowserRouter } from 'react-router-dom'
+import './index.css'
+import App from './App.jsx'
+import AuthProvider from './provider/authProvider'
 
-const Logout = () => {
-    const { setToken } = useAuth();
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        setToken(null);
-        navigate("/login", { replace: true });
-    }, [setToken, navigate]);
-
-    return <div>Logging out...</div>;
-};
-
-export default Logout;
+createRoot(document.getElementById('root')).render(
+    <StrictMode>
+        <AuthProvider>
+            <BrowserRouter>
+                <App />
+            </BrowserRouter>
+        </AuthProvider>
+    </StrictMode>,
+)

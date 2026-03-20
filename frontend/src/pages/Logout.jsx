@@ -1,17 +1,17 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router";
-import { useAuth } from "../provider/authProvider";
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../provider/authProvider'
 
-const Logout = () => {
-    const { setToken } = useAuth();
-    const navigate = useNavigate();
+function Logout() {
+    const { logout } = useAuth()
+    const navigate = useNavigate()
 
     useEffect(() => {
-        setToken(null);
-        navigate("/login", { replace: true });
-    }, [setToken, navigate]);
+        logout()
+        navigate('/login', { replace: true })
+    }, [logout, navigate])
 
-    return <div>Logging out...</div>;
-};
+    return <div>Logging out...</div>
+}
 
-export default Logout;
+export default Logout
