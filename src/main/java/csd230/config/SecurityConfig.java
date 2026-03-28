@@ -31,13 +31,19 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // Public frontend files
+                        .requestMatchers("/", "/index.html", "/assets/**", "/favicon.ico").permitAll()
+
+                        // Public auth + H2 console
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
 
+                        // Read access for USER and ADMIN
                         .requestMatchers(HttpMethod.GET, "/api/books/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/magazines/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/laptops/**").hasAnyRole("USER", "ADMIN")
 
+                        // Admin-only write access
                         .requestMatchers(HttpMethod.POST, "/api/books/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/books/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/books/**").hasRole("ADMIN")
@@ -50,7 +56,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/laptops/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/laptops/**").hasRole("ADMIN")
 
-                        .anyRequest().authenticated()
+                        // Everything else can load so React routing works
+                        .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
 
