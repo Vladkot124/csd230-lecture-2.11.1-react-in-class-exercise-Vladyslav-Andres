@@ -2,7 +2,7 @@ name: Java CI/CD Pipeline
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [ "main", "master", "lab-7-csd230-w26-vladyslav-andres"]
 
 jobs:
   test:
