@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/books")
-@CrossOrigin(origins = "http://localhost:5173") // Allow Vite React App
+@CrossOrigin(origins = "*") // Allow Vite React App
 public class BookController {
 
     private final BookRepository bookRepository;

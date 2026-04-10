@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-    baseURL: '/api'
+    baseURL: ' https://csd230-lecture-2-11-1-react-in-class-we0x.onrender.com/'
 })
 
 api.interceptors.request.use(
