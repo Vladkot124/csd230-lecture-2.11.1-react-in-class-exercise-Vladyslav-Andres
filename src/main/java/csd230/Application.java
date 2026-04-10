@@ -24,7 +24,7 @@ public class Application {
                 UserEntity admin = new UserEntity(
                         "admin@admin.com",
                         passwordEncoder.encode("admin"),
-                        UserRole.ADMIN
+                        UserRole.ROLE_ADMIN
                 );
                 userRepository.save(admin);
                 System.out.println("✅ Admin user created: admin@admin.com / admin");
@@ -34,7 +34,7 @@ public class Application {
                 UserEntity user = new UserEntity(
                         "user@user.com",
                         passwordEncoder.encode("user"),
-                        UserRole.USER
+                        UserRole.ROLE_USER
                 );
                 userRepository.save(user);
                 System.out.println("✅ User created: user@user.com / user");
