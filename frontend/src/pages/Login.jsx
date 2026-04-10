@@ -11,8 +11,8 @@ function Login() {
     const queryParams = new URLSearchParams(location.search)
     const isExpired = queryParams.get('expired') === 'true'
 
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
+    const [email, setEmail] = useState('admin@admin.com')
+    const [password, setPassword] = useState('admin')
     const [error, setError] = useState('')
 
     const handleLogin = async (e) => {
@@ -36,17 +36,16 @@ function Login() {
     }
 
     return (
-        <div style={{ textAlign: 'center', marginTop: '50px' }}>
-            <h2>Sign In to Bookstore Admin</h2>
+        <div style={{ maxWidth: '420px', margin: '60px auto', padding: '24px', border: '1px solid #ddd', borderRadius: '12px' }}>
+            <h2 style={{ textAlign: 'center' }}>Sign In to Bookstore Admin</h2>
 
             {isExpired && (
                 <div
                     style={{
-                        backgroundColor: 'orange',
-                        color: 'black',
+                        backgroundColor: '#ffe08a',
+                        color: '#222',
                         padding: '12px',
-                        margin: '0 auto 20px auto',
-                        width: '320px',
+                        marginBottom: '20px',
                         borderRadius: '8px',
                         fontWeight: 'bold'
                     }}
@@ -57,33 +56,39 @@ function Login() {
 
             {error && <p style={{ color: 'red' }}>{error}</p>}
 
-            <form onSubmit={handleLogin} style={{ display: 'inline-block', textAlign: 'left' }}>
-                <div style={{ marginBottom: '10px' }}>
-                    <label>Email:</label>
+            <form onSubmit={handleLogin}>
+                <div style={{ marginBottom: '12px' }}>
+                    <label>Email</label>
                     <br />
                     <input
                         type="text"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
+                        style={{ width: '100%', padding: '8px' }}
                     />
                 </div>
 
-                <div style={{ marginBottom: '10px' }}>
-                    <label>Password:</label>
+                <div style={{ marginBottom: '12px' }}>
+                    <label>Password</label>
                     <br />
                     <input
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
+                        style={{ width: '100%', padding: '8px' }}
                     />
                 </div>
 
-                <button type="submit" style={{ width: '100%' }}>
+                <button type="submit" style={{ width: '100%', padding: '10px' }}>
                     Login
                 </button>
             </form>
+
+            <p style={{ marginTop: '16px', fontSize: '14px', color: '#666' }}>
+                Demo admin: admin@admin.com / admin
+            </p>
         </div>
     )
 }

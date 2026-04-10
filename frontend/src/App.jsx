@@ -3,30 +3,78 @@ import { Routes, Route } from 'react-router-dom'
 import Book from './Book'
 import BookForm from './BookForm'
 import Magazine from './Magazine'
-import MagazineForm from './MagazineForm'
 import Laptop from './Laptop'
 import LaptopForm from './LaptopForm'
 import Navbar from './Navbar'
 import Login from './pages/Login'
 import Logout from './pages/Logout'
+import Cart from './pages/Cart'
 import ProtectedRoute from './routes/ProtectedRoute'
 import { useAuth } from './provider/authProvider'
+import { useCart } from './provider/cartProvider'
 import api from './api/axiosConfig'
 
 function Home() {
     return (
         <div>
-            <h1>Bookstore Home</h1>
-            <p>Select a section from the navigation bar.</p>
+            <h1>Bookstore Admin Dashboard</h1>
+            <p>Manage books, magazines, laptops, and customer carts.</p>
         </div>
     )
 }
 
 function ProtectedLayout({ children }) {
     return (
-        <div style={{ maxWidth: '900px', margin: '0 auto', padding: '20px' }}>
+        <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '20px' }}>
             <Navbar />
             {children}
+        </div>
+    )
+}
+
+function Catalog({ books, magazines, laptops }) {
+    const { addToCart } = useCart()
+
+    const normalized = [
+        ...books.map((b) => ({
+            key: `book-${b.id}`,
+            name: b.title,
+            price: b.price,
+            type: 'Book'
+        })),
+        ...magazines.map((m) => ({
+            key: `magazine-${m.id}`,
+            name: m.title,
+            price: m.price,
+            type: 'Magazine'
+        })),
+        ...laptops.map((l) => ({
+            key: `laptop-${l.id}`,
+            name: `${l.brand} ${l.model}`,
+            price: l.price,
+            type: 'Laptop'
+        }))
+    ]
+
+    return (
+        <div>
+            <h1>Catalog</h1>
+            {normalized.map((item) => (
+                <div
+                    key={item.key}
+                    style={{
+                        border: '1px solid #ddd',
+                        borderRadius: '10px',
+                        padding: '16px',
+                        marginBottom: '12px'
+                    }}
+                >
+                    <h3>{item.name}</h3>
+                    <p>Type: {item.type}</p>
+                    <p>Price: ${item.price}</p>
+                    <button onClick={() => addToCart(item)}>Add to Cart</button>
+                </div>
+            ))}
         </div>
     )
 }
@@ -113,7 +161,7 @@ function App() {
                     element={
                         <ProtectedLayout>
                             <div>
-                                <h1>Current Inventory</h1>
+                                <h1>Book Inventory</h1>
                                 {loading ? (
                                     <h2>Loading...</h2>
                                 ) : (
@@ -137,7 +185,7 @@ function App() {
                         <ProtectedLayout>
                             {isAdmin ? (
                                 <div>
-                                    <h1>Add to Library</h1>
+                                    <h1>Add Book</h1>
                                     <BookForm onBookAdded={handleAddBook} />
                                 </div>
                             ) : (
@@ -210,17 +258,19 @@ function App() {
                 />
 
                 <Route
-                    path="/add-laptop"
+                    path="/catalog"
                     element={
                         <ProtectedLayout>
-                            {isAdmin ? (
-                                <div>
-                                    <h1>Add Laptop</h1>
-                                    <LaptopForm onLaptopSaved={loadLaptops} />
-                                </div>
-                            ) : (
-                                <h2>Access Denied</h2>
-                            )}
+                            <Catalog books={books} magazines={magazines} laptops={laptops} />
+                        </ProtectedLayout>
+                    }
+                />
+
+                <Route
+                    path="/cart"
+                    element={
+                        <ProtectedLayout>
+                            <Cart />
                         </ProtectedLayout>
                     }
                 />
@@ -238,4 +288,4 @@ function App() {
     )
 }
 
-export default App
+export default <App></App>
