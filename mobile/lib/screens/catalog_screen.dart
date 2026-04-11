@@ -11,66 +11,124 @@ class CatalogScreen extends StatefulWidget {
 }
 
 class _CatalogScreenState extends State<CatalogScreen> {
-  List<dynamic> books = [];
-  List<dynamic> magazines = [];
-  List<dynamic> laptops = [];
-  bool loading = true;
+  List products = [];
+  List cart = [];
 
   @override
   void initState() {
     super.initState();
-    loadAll();
+    loadProducts();
   }
 
-  Future<void> loadAll() async {
-    final loadedBooks = await ApiService.fetchBooks(widget.token);
-    final loadedMagazines = await ApiService.fetchMagazines(widget.token);
-    final loadedLaptops = await ApiService.fetchLaptops(widget.token);
-
+  void loadProducts() async {
+    final data = await ApiService.getBooks(widget.token);
     setState(() {
-      books = loadedBooks;
-      magazines = loadedMagazines;
-      laptops = loadedLaptops;
-      loading = false;
+      products = data;
     });
   }
 
-  Widget section(String title, List<dynamic> items, String Function(dynamic) labelBuilder) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 8),
-        ...items.map((item) => Card(
-          child: ListTile(
-            title: Text(labelBuilder(item)),
-            subtitle: Text('Price: \$${item['price']}'),
-          ),
-        )),
-        const SizedBox(height: 16),
-      ],
+  void addToCart(item) {
+    setState(() {
+      cart.add(item);
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('${item['title']} added to cart')),
     );
+  }
+
+  double get totalPrice {
+    double total = 0;
+    for (var item in cart) {
+      total += (item['price'] ?? 0);
+    }
+    return total;
   }
 
   @override
   Widget build(BuildContext context) {
-    if (loading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
-
     return Scaffold(
-      appBar: AppBar(title: const Text('Bookstore Catalog')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            section('Books', books, (b) => b['title'] ?? 'Book'),
-            section('Magazines', magazines, (m) => m['title'] ?? 'Magazine'),
-            section('Laptops', laptops, (l) => '${l['brand'] ?? ''} ${l['model'] ?? ''}'.trim()),
-          ],
-        ),
+      appBar: AppBar(
+        title: const Text('Bookstore Catalog'),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Center(
+              child: Text(
+                'Cart: ${cart.length}',
+                style: const TextStyle(fontSize: 16),
+              ),
+            ),
+          )
+        ],
+      ),
+      body: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 2,
+            child: products.isEmpty
+                ? const Center(child: CircularProgressIndicator())
+                : ListView.builder(
+              itemCount: products.length,
+              itemBuilder: (context, index) {
+                final item = products[index];
+
+                return Card(
+                  margin: const EdgeInsets.all(10),
+                  elevation: 3,
+                  child: ListTile(
+                    title: Text(
+                      item['title'] ?? 'No title',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text('Price: \$${item['price']}'),
+                    trailing: ElevatedButton(
+                      onPressed: () => addToCart(item),
+                      child: const Text('Add'),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          Container(
+            width: 320,
+            padding: const EdgeInsets.all(16),
+            color: Colors.grey.shade100,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Cart',
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
+                Expanded(
+                  child: cart.isEmpty
+                      ? const Text('Cart is empty')
+                      : ListView.builder(
+                    itemCount: cart.length,
+                    itemBuilder: (context, index) {
+                      final item = cart[index];
+                      return Card(
+                        child: ListTile(
+                          title: Text(item['title'] ?? 'No title'),
+                          subtitle: Text('Price: \$${item['price']}'),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Total: \$${totalPrice.toStringAsFixed(2)}',
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                )
+              ],
+            ),
+          )
+        ],
       ),
     );
   }
