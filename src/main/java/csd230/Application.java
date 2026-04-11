@@ -19,7 +19,6 @@ public class Application {
     @Bean
     CommandLineRunner initUsers(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return args -> {
-
             if (userRepository.findByEmail("admin@admin.com").isEmpty()) {
                 UserEntity admin = new UserEntity(
                         "admin@admin.com",
